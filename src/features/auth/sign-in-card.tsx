@@ -29,9 +29,6 @@ export const SignInCard = () => {
     const password = formData.get("password") as string;
 
     if (email && password) {
-      console.log(email);
-      console.log(password);
-
       mutate({
         json: {
           email,
@@ -90,8 +87,8 @@ export const SignInCard = () => {
             onClick={() => {
               mutate({
                 json: {
-                  email: "1",
-                  password: "1",
+                  email: "test@gmail.com",
+                  password: "test@123",
                   type: "github",
                 },
               });
