@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { useAuthScreen } from "./hooks/use-auth-screen";
+import { useLogin } from "./api/use-login";
 
 export const SignInCard = () => {
   const { setState } = useAuthScreen();
+  const { mutate } = useLogin();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +31,14 @@ export const SignInCard = () => {
     if (email && password) {
       console.log(email);
       console.log(password);
+
+      mutate({
+        json: {
+          email,
+          password,
+          type: "credentials",
+        },
+      });
     }
   };
 
@@ -77,7 +87,15 @@ export const SignInCard = () => {
           </Button>
           <Button
             disabled={false}
-            onClick={() => {}}
+            onClick={() => {
+              mutate({
+                json: {
+                  email: "1",
+                  password: "1",
+                  type: "github",
+                },
+              });
+            }}
             variant={"outline"}
             size={"lg"}
             className="w-full relative"

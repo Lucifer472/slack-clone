@@ -12,14 +12,14 @@ export default middleware(async (req) => {
   }
 
   if (isLoggedIn) {
-    if (nextUrl.pathname === "/") {
-      return Response.redirect(new URL("/admin", nextUrl));
+    if (nextUrl.pathname === "/sign-in") {
+      return Response.redirect(new URL("/", nextUrl));
     }
     return;
   }
 
-  if (nextUrl.pathname !== "/") {
-    return Response.redirect(new URL("/", nextUrl));
+  if (nextUrl.pathname !== "/sign-in") {
+    return Response.redirect(new URL("/sign-in", nextUrl));
   }
 
   return;
