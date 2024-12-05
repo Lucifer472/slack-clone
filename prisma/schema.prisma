@@ -9,8 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
 }
 
 model User {
@@ -23,6 +28,7 @@ model User {
   accounts      Account[]
 
   workspaces   workspaces[]
+  Members      Members[]
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,4 +63,26 @@ model workspaces {
 
   userId   String
   user     User  @relation(references: [id],fields: [userId],onDelete: Cascade)
+
+  workspace Members[]
+}
+
+model Members {
+  id       Int   @id @default(autoincrement())
+
+  userId  String
+  user    User  @relation(fields: [userId], references: [id],onDelete: Cascade)
+
+  workspaceId String
+  workspace  workspaces  @relation(fields: [workspaceId], references: [id],onDelete: Cascade)
+
+  role Role   @default(MEMBER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId,workspaceId])
+  @@index([userId,workspaceId],name:"by_workspace_id_user_id")
+  @@index([userId],name:"by_user_id")
+  @@index([workspaceId],name:"bg_workspace_id")
 }

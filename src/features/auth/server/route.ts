@@ -27,7 +27,7 @@ const app = new Hono()
 
       try {
         if (type == "github") {
-          await signIn("github", { redirect: false });
+          // await signIn("github", { redirect: false });
           return c.json({ success: "Request was ok" }, 200);
         }
 
@@ -61,12 +61,13 @@ const app = new Hono()
     zValidator(
       "json",
       z.object({
+        fname: z.string().min(3),
         email: z.string().email("Invalid email"),
         password: z.string().min(8, "Password must be at least 8 characters"),
       })
     ),
     async (c) => {
-      const { email, password } = c.req.valid("json");
+      const { email, password, fname } = c.req.valid("json");
 
       try {
         const user = await getUserByEmail({ email });
@@ -78,6 +79,7 @@ const app = new Hono()
 
         await db.user.create({
           data: {
+            name: fname,
             email,
             password: hashedPassword,
           },

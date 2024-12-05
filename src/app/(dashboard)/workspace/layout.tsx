@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/navbar";
+import { Resizable } from "@/components/resizable";
 import { Sidebar } from "@/components/sidebar";
 
 const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
@@ -7,7 +8,7 @@ const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
       <Navbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
-        {children}
+        <Resizable>{children}</Resizable>
       </div>
     </div>
   );

@@ -1,6 +1,4 @@
 "use client";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 
 import {
   Card,
@@ -15,12 +13,10 @@ import { Separator } from "@/components/ui/separator";
 
 import { useAuthScreen } from "./hooks/use-auth-screen";
 import { useRegister } from "./api/use-register";
-import { useLogin } from "./api/use-login";
 
 export const SignUpCard = () => {
   const { setState } = useAuthScreen();
 
-  const loggedIn = useLogin();
   const { mutate } = useRegister();
 
   const handleSignUp = (e: React.FormEvent) => {
@@ -30,6 +26,7 @@ export const SignUpCard = () => {
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const fname = formData.get("name") as string;
     const confirm = formData.get("confirm-password") as string;
 
     if (password !== confirm || typeof password !== "string") {
@@ -37,10 +34,11 @@ export const SignUpCard = () => {
       return;
     }
 
-    if (email && password) {
+    if (email && password && fname) {
       mutate({
         json: {
           email,
+          fname,
           password,
         },
       });
@@ -57,6 +55,14 @@ export const SignUpCard = () => {
       </CardHeader>
       <CardContent className="space-y-5 px-0 pb-0">
         <form className="space-y-2.5" onSubmit={handleSignUp}>
+          <Input
+            disabled={false}
+            type="text"
+            placeholder="Full Name"
+            name="name"
+            minLength={3}
+            required
+          />
           <Input
             disabled={false}
             type="email"
@@ -83,7 +89,7 @@ export const SignUpCard = () => {
           </Button>
         </form>
         <Separator />
-        <div className="flex flex-col gap-y-2.5">
+        {/* <div className="flex flex-col gap-y-2.5">
           <Button
             disabled={false}
             onClick={() => {}}
@@ -118,7 +124,7 @@ export const SignUpCard = () => {
             />
             Continue with Github
           </Button>
-        </div>
+        </div> */}
         <p className="text-xs text-muted-foreground">
           Already have an Account?{" "}
           <span

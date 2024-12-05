@@ -1,6 +1,4 @@
 "use client";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 
 import {
   Card,
@@ -68,7 +66,7 @@ export const SignInCard = () => {
           </Button>
         </form>
         <Separator />
-        <div className="flex flex-col gap-y-2.5">
+        {/* <div className="flex flex-col gap-y-2.5">
           <Button
             disabled={false}
             onClick={() => {}}
@@ -85,13 +83,7 @@ export const SignInCard = () => {
           <Button
             disabled={false}
             onClick={() => {
-              mutate({
-                json: {
-                  email: "test@gmail.com",
-                  password: "test@123",
-                  type: "github",
-                },
-              });
+              signInWithGithub();
             }}
             variant={"outline"}
             size={"lg"}
@@ -103,7 +95,7 @@ export const SignInCard = () => {
             />
             Continue with Github
           </Button>
-        </div>
+        </div> */}
         <p className="text-xs text-muted-foreground">
           Don&apos;t have an Account?{" "}
           <span
