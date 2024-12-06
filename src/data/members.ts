@@ -13,6 +13,26 @@ export const getMembersByUserId = async ({ userId }: { userId: string }) => {
   }
 };
 
+export const getMembersByWorkspaceId = async ({
+  workspaceId,
+}: {
+  workspaceId: string;
+}) => {
+  try {
+    return await db.members.findMany({
+      where: {
+        workspaceId,
+      },
+      include: {
+        user: true,
+      },
+      take: 1000,
+    });
+  } catch {
+    return null;
+  }
+};
+
 export const getMembersByUserIdWorkspaceId = async ({
   userId,
   workspaceId,

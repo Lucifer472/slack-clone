@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { workspaces } from "@prisma/client";
+import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
 
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
@@ -10,9 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
 
 import { PreferencesModal } from "./preferences-modal";
+import { InviteModal } from "./invite-modal";
 
 export const WorkspaceHeader = ({
   workspace,
@@ -22,6 +23,7 @@ export const WorkspaceHeader = ({
   isAdmin: boolean;
 }) => {
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   return (
     <div className="flex items-center justify-between px-4 h-[49px] gap-0.5">
@@ -29,6 +31,11 @@ export const WorkspaceHeader = ({
         open={preferencesOpen}
         setOpen={setPreferencesOpen}
         workspaceId={workspace.id}
+      />
+      <InviteModal
+        open={inviteOpen}
+        setOpen={setInviteOpen}
+        workspace={workspace}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -56,7 +63,7 @@ export const WorkspaceHeader = ({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="cursor-pointer py-2"
-                onClick={() => {}}
+                onClick={() => setInviteOpen(true)}
               >
                 Invite People to {workspace.name}
               </DropdownMenuItem>

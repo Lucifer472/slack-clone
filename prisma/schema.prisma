@@ -64,7 +64,8 @@ model workspaces {
   userId   String
   user     User  @relation(references: [id],fields: [userId],onDelete: Cascade)
 
-  workspace Members[]
+  members Members[]
+  channels  Channels[]
 }
 
 model Members {
@@ -85,4 +86,16 @@ model Members {
   @@index([userId,workspaceId],name:"by_workspace_id_user_id")
   @@index([userId],name:"by_user_id")
   @@index([workspaceId],name:"bg_workspace_id")
+}
+
+
+model Channels {
+  id   Int     @id  @default(autoincrement())
+
+  name  String
+
+  workspaceId  String
+  workspace  workspaces  @relation(fields: [workspaceId], references: [id],onDelete:Cascade)
+
+  @@index([workspaceId],name:"by_workspace_id")
 }

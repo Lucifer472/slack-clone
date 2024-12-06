@@ -10,6 +10,7 @@ import { getWorkspaceById } from "@/data/workspace";
 import {
   getMembersByUserId,
   getMembersByUserIdWorkspaceId,
+  getMembersByWorkspaceId,
 } from "@/data/members";
 
 const app = new Hono()
@@ -52,26 +53,49 @@ const app = new Hono()
       return c.json({ error: "No Workspace Found!" }, 404);
     }
 
-    if (workspace.userId !== user.id) {
-      return c.json(
-        { error: "You don't have permission to access this workspace!" },
-        400
-      );
+    const member = await getMembersByUserIdWorkspaceId({
+      userId: user.id,
+      workspaceId,
+    });
+
+    if (!member) {
+      return c.json({ error: "You are not a Authorized!" }, 403);
     }
 
     return c.json({ success: "request was success", data: workspace }, 200);
+  })
+  .get("/:workspaceId/member", SessionMiddleware, async (c) => {
+    const user = c.get("user");
+    const { workspaceId } = c.req.param();
+
+    const member = await getMembersByUserIdWorkspaceId({
+      workspaceId,
+      userId: user.id,
+    });
+
+    if (!member) {
+      return c.json({ error: "No Workspace Found!" }, 404);
+    }
+
+    return c.json({ success: "request was success", data: member }, 200);
   })
   .get("/:workspaceId/members", SessionMiddleware, async (c) => {
     const user = c.get("user");
     const { workspaceId } = c.req.param();
 
-    const members = await getMembersByUserIdWorkspaceId({
+    const member = await getMembersByUserIdWorkspaceId({
       workspaceId,
       userId: user.id,
     });
 
-    if (!members) {
+    if (!member) {
       return c.json({ error: "No Workspace Found!" }, 404);
+    }
+
+    const members = await getMembersByWorkspaceId({ workspaceId });
+
+    if (!members) {
+      return c.json({ error: "Something went wrong!" }, 500);
     }
 
     return c.json({ success: "request was success", data: members }, 200);
@@ -98,6 +122,13 @@ const app = new Hono()
             userId: user.id,
             workspaceId: workspace.id,
             role: "ADMIN",
+          },
+        });
+
+        await db.channels.create({
+          data: {
+            name: "general",
+            workspaceId: workspace.id,
           },
         });
 
