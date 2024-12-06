@@ -9,7 +9,7 @@ export const Navbar = () => {
   const params = useParams<{ id: string }>();
   const workspaceId = params.id;
 
-  const { data } = useGetWorkspaceById({ param: { workspaceId } });
+  const { data } = useGetWorkspaceById(workspaceId);
 
   if (!data || !data.data) {
     return;

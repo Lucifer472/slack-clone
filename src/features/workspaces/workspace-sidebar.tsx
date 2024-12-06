@@ -12,9 +12,8 @@ export const WorkspaceSidebar = () => {
   const params = useParams<{ id: string }>();
   const workspaceId = params.id;
 
-  const { data: workspace, isPending: workspacePending } = useGetWorkspaceById({
-    param: { workspaceId },
-  });
+  const { data: workspace, isPending: workspacePending } =
+    useGetWorkspaceById(workspaceId);
 
   const { data: members, isPending: membersPending } =
     useGetMembersByUserIdWorkspaceId({ param: { workspaceId } });
@@ -39,8 +38,8 @@ export const WorkspaceSidebar = () => {
   return (
     <div className="flex flex-col bg-[#5c2c5f] h-full">
       <WorkspaceHeader
-        workspace={workspace.data}
         isAdmin={members.data.role === "ADMIN"}
+        workspace={workspace.data}
       />
     </div>
   );

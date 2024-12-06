@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { workspaces } from "@prisma/client";
+
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,10 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { workspaces } from "@prisma/client";
 import { ChevronDownIcon, ListFilterIcon, SquarePenIcon } from "lucide-react";
+
 import { PreferencesModal } from "./preferences-modal";
-import { useState } from "react";
 
 export const WorkspaceHeader = ({
   workspace,
@@ -24,7 +26,6 @@ export const WorkspaceHeader = ({
   return (
     <div className="flex items-center justify-between px-4 h-[49px] gap-0.5">
       <PreferencesModal
-        initialValue={workspace.name}
         open={preferencesOpen}
         setOpen={setPreferencesOpen}
         workspaceId={workspace.id}

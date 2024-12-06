@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={cn("antialiased", inter.className)}>
         <Toaster />
         <QueryProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>{children} </NuqsAdapter>
         </QueryProvider>
       </body>
     </html>

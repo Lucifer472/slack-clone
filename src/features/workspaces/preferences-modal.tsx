@@ -1,32 +1,36 @@
+"use client";
 import { useState } from "react";
 import { TrashIcon } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useUpdateWorkspace } from "./api/use-update-workspace";
-import { useDeleteWorkspace } from "./api/use-delete-workspace";
 import { Input } from "@/components/ui/input";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 
+import { useGetWorkspaceById } from "./api/use-get-workspace-by-id";
+import { useUpdateWorkspace } from "./api/use-update-workspace";
+import { useDeleteWorkspace } from "./api/use-delete-workspace";
+
 export const PreferencesModal = ({
-  initialValue,
   open,
   setOpen,
   workspaceId,
 }: {
-  initialValue: string;
   open: boolean;
   setOpen: (v: boolean) => void;
   workspaceId: string;
 }) => {
-  const [value, setValue] = useState(initialValue);
   const [editOpen, setEditOpen] = useState(false);
+  const [value, setValue] = useState("");
+
+  const { data: workspace, isPending: workspacePending } =
+    useGetWorkspaceById(workspaceId);
 
   const { mutate: updateWorkspace, isPending: isUpdateWorkspace } =
     useUpdateWorkspace();
@@ -34,11 +38,19 @@ export const PreferencesModal = ({
   const { mutate: deleteWorkspace, isPending: isDeleteWorkspace } =
     useDeleteWorkspace({ param: { workspaceId } });
 
+  if (workspacePending) {
+    return;
+  }
+
+  if (!workspace) {
+    return;
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="p-0 bg-gray-50 overflow-hidden">
         <DialogHeader className="p-4 border-b bg-white">
-          <DialogTitle>{value}</DialogTitle>
+          <DialogTitle>{workspace.data.name}</DialogTitle>
         </DialogHeader>
         <div className="px-4 pb-4 flex flex-col gap-y-4">
           <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -50,7 +62,7 @@ export const PreferencesModal = ({
                     Edit
                   </p>
                 </div>
-                <p className="text-sm">{value}</p>
+                <p className="text-sm">{workspace.data.name}</p>
               </div>
             </DialogTrigger>
             <DialogContent>
@@ -71,7 +83,7 @@ export const PreferencesModal = ({
                   type="text"
                   minLength={3}
                   placeholder="Workspace Name e.g. Work Or Personal"
-                  value={value}
+                  defaultValue={workspace.data.name}
                   disabled={isUpdateWorkspace}
                   onChange={(e) => setValue(e.target.value)}
                   required

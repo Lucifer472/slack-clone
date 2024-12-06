@@ -33,10 +33,10 @@ export const useDeleteWorkspace = ({
 
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Workspace Deleted successfully");
-      queryClient.invalidateQueries();
-      router.push("/");
+      await queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      router.replace("/");
     },
     onError: () => {
       toast.error("Unable to Deleted Workspace");

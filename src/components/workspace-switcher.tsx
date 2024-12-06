@@ -21,9 +21,7 @@ export const WorkspaceSwitcher = () => {
   const params = useParams<{ id: string }>();
 
   const { data: workspaces } = useGetWorkspaces();
-  const { data, isPending } = useGetWorkspaceById({
-    param: { workspaceId: params.id },
-  });
+  const { data, isPending } = useGetWorkspaceById(params.id);
 
   if (isPending || !data || !data.data || !workspaces) {
     return <Loader className="animate-spin text-white" />;
@@ -44,7 +42,9 @@ export const WorkspaceSwitcher = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent side="bottom" align="start" className="w-64">
         <DropdownMenuItem
-          onClick={() => router.push("/workspace/" + workspace.id)}
+          onClick={() => {
+            router.push("/workspace/" + workspace.id);
+          }}
           className="cursor-pointer flex-col justify-start items-start capitalize"
         >
           <p className="truncate">{workspace.name}</p>
@@ -56,7 +56,9 @@ export const WorkspaceSwitcher = () => {
           <DropdownMenuItem
             key={d.id}
             className="cursor-pointer capitalize"
-            onClick={() => router.push("/workspace/" + d.id)}
+            onClick={() => {
+              router.push("/workspace/" + d.id);
+            }}
           >
             <div className="shrink-0 size-9 relative overflow-hidden bg-[#616061] text-white font-semibold text-lg rounded-md flex items-center justify-center mr-2">
               {d.name.charAt(0).toUpperCase()}

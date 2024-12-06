@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/navbar";
-import { Resizable } from "@/components/resizable";
 import { Sidebar } from "@/components/sidebar";
+import { Resizable } from "@/components/resizable";
 
 const WorkspaceLayout = ({ children }: { children: React.ReactNode }) => {
   return (

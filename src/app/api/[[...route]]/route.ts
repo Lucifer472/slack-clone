@@ -6,7 +6,6 @@ import workspacesRoute from "@/features/workspaces/server/route";
 
 const app = new Hono().basePath("/api");
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const routes = app
   .route("/auth-route", authRoute)
   .route("/workspaces", workspacesRoute);

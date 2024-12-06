@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from "react";
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {
   isServer,
@@ -44,8 +43,6 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = getQueryClient();
 
   return (
-    <Suspense>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
