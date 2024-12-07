@@ -3,7 +3,7 @@ import { client } from "@/lib/rpc";
 
 export const useGetChannels = (workspaceId: string) => {
   const query = useQuery({
-    queryKey: ["channels"],
+    queryKey: ["channels", workspaceId],
     queryFn: async () => {
       const response = await client["api"]["channels"][":workspaceId"]["$get"]({
         param: { workspaceId },

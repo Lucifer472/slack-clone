@@ -11,8 +11,8 @@ import {
 import { useGetMemberByUserIdWorkspaceId } from "@/features/workspaces/api/use-get-member";
 import { useGetWorkspaceById } from "@/features/workspaces/api/use-get-workspace-by-id";
 import { useGetChannels } from "@/features/channels/api/use-get-channels";
-
-import { useGetMembersByWorkspaceId } from "./api/use-get-members";
+import { useChannelModal } from "@/features/channels/hooks/use-create-channel-modal";
+import { useGetMembersByWorkspaceId } from "@/features/workspaces/api/use-get-members";
 
 import { useWorkspaceId } from "./hooks/use-workspace-id";
 
@@ -20,7 +20,6 @@ import { WorkspaceHeader } from "./workspace-header";
 import { WorkspaceSection } from "./workspace-section";
 import { SidebarItem } from "./sidebar-item";
 import { UserItem } from "./user-item";
-import { useChannelModal } from "../channels/hooks/use-create-channel-modal";
 
 export const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId();

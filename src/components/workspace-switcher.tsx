@@ -1,6 +1,6 @@
 "use client";
 import { Loader, PlusIcon } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -13,15 +13,16 @@ import { Button } from "./ui/button";
 import { useGetWorkspaceById } from "@/features/workspaces/api/use-get-workspace-by-id";
 import { useWorkspaceModal } from "@/features/workspaces/hooks/use-create-workspace-modal";
 import { useGetWorkspaces } from "@/features/workspaces/api/use-get-workspaces";
+import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 
 export const WorkspaceSwitcher = () => {
   const { setOpen } = useWorkspaceModal();
 
   const router = useRouter();
-  const params = useParams<{ id: string }>();
+  const workspaceId = useWorkspaceId();
 
   const { data: workspaces } = useGetWorkspaces();
-  const { data, isPending } = useGetWorkspaceById(params.id);
+  const { data, isPending } = useGetWorkspaceById(workspaceId);
 
   if (isPending || !data || !data.data || !workspaces) {
     return <Loader className="animate-spin text-white" />;

@@ -5,7 +5,11 @@ import { db } from "@/lib/db";
 import { SessionMiddleware } from "@/lib/session";
 import { makeCode } from "@/lib/utils";
 
-import { CreateWorkspaceSchema } from "../schema";
+import {
+  CreateWorkspaceSchema,
+  JoinWorkspaceSchema,
+  UpdateWorkspaceSchema,
+} from "../schema";
 import { getWorkspaceById } from "@/data/workspace";
 import {
   getMembersByUserId,
@@ -101,6 +105,42 @@ const app = new Hono()
     return c.json({ success: "request was success", data: members }, 200);
   })
   .post(
+    "/join",
+    zValidator("json", JoinWorkspaceSchema),
+    SessionMiddleware,
+    async (c) => {
+      const { joinCode, workspaceId } = c.req.valid("json");
+      const user = c.get("user");
+
+      const workspace = await getWorkspaceById({ id: workspaceId });
+
+      if (!workspace) {
+        return c.json({ error: "No workspace Found!" }, 404);
+      }
+
+      if (workspace.joinCode !== joinCode) {
+        return c.json({ error: "Invalid Join Code!" }, 403);
+      }
+
+      try {
+        await db.members.create({
+          data: {
+            role: "MEMBER",
+            workspaceId,
+            userId: user.id,
+          },
+        });
+
+        return c.json(
+          { success: "Request was success", id: workspace.id },
+          200
+        );
+      } catch (error) {
+        return c.json({ error }, 500);
+      }
+    }
+  )
+  .post(
     "/create",
     SessionMiddleware,
     zValidator("json", CreateWorkspaceSchema),
@@ -141,13 +181,13 @@ const app = new Hono()
   .patch(
     "/:workspaceId",
     SessionMiddleware,
-    zValidator("json", CreateWorkspaceSchema),
+    zValidator("json", UpdateWorkspaceSchema),
     async (c) => {
       const user = c.get("user");
       const { workspaceId } = c.req.param();
-      const { name } = c.req.valid("json");
+      const { name, joinCode } = c.req.valid("json");
 
-      const workspace = getWorkspaceById({ id: workspaceId });
+      const workspace = await getWorkspaceById({ id: workspaceId });
 
       if (!workspace) {
         return c.json({ error: "No workspace Found!" }, 404);
@@ -168,7 +208,8 @@ const app = new Hono()
             id: workspaceId,
           },
           data: {
-            name,
+            name: name ? name : workspace.name,
+            joinCode: joinCode ? makeCode(6) : workspace.joinCode,
           },
         });
 
