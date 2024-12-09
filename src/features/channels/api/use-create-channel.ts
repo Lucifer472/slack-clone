@@ -5,7 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/rpc";
 
 type ResponseType = InferResponseType<
-  (typeof client)["api"]["channels"][":workspaceId"]["$post"]
+  (typeof client)["api"]["channels"][":workspaceId"]["$post"],
+  200
 >;
 type RequestType = InferRequestType<
   (typeof client)["api"]["channels"][":workspaceId"]["$post"]
@@ -13,6 +14,7 @@ type RequestType = InferRequestType<
 
 export const useCreateChannels = () => {
   const queryClient = useQueryClient();
+
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ json, param }) => {
       const response = await client["api"]["channels"][":workspaceId"]["$post"](

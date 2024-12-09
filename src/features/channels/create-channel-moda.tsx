@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import {
   Dialog,
@@ -12,12 +13,14 @@ import { useChannelModal } from "./hooks/use-create-channel-modal";
 import { useWorkspaceId } from "../workspaces/hooks/use-workspace-id";
 
 import { useCreateChannels } from "./api/use-create-channel";
+import { useRouter } from "next/navigation";
 
 export const CreateChannelModal = () => {
   const { open, setOpen } = useChannelModal();
   const [name, setName] = useState("");
 
   const workspaceId = useWorkspaceId();
+  const router = useRouter();
 
   const { mutate, isPending } = useCreateChannels();
 
@@ -44,8 +47,10 @@ export const CreateChannelModal = () => {
             mutate(
               { json: { name }, param: { workspaceId } },
               {
-                onSuccess: () => {
-                  handleClose();
+                onSuccess: (res) => {
+                  router.push(
+                    "/workspace/" + workspaceId + "/channel/" + res.data.id
+                  );
                 },
               }
             );

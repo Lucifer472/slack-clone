@@ -1,13 +1,12 @@
 "use client";
-import { useParams } from "next/navigation";
 import { Info, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useGetWorkspaceById } from "@/features/workspaces/api/use-get-workspace-by-id";
+import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 
 export const Navbar = () => {
-  const params = useParams<{ id: string }>();
-  const workspaceId = params.id;
+  const workspaceId = useWorkspaceId();
 
   const { data } = useGetWorkspaceById(workspaceId);
 

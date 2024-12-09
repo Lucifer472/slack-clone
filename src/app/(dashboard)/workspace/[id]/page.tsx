@@ -1,7 +1,12 @@
+import { redirect } from "next/navigation";
+
+import { getChannelsByWorkspaceId } from "@/data/channels";
 import { getMembersByUserIdWorkspaceId } from "@/data/members";
 import { getWorkspaceById } from "@/data/workspace";
+
 import { session } from "@/lib/session";
-import { redirect } from "next/navigation";
+
+import { Workspace } from "@/features/workspaces/workspace";
 
 const WorkspacePage = async ({
   params,
@@ -26,11 +31,17 @@ const WorkspacePage = async ({
     workspaceId: id,
   });
 
-  if (!member) {
+  const channels = await getChannelsByWorkspaceId({ workspaceId: id });
+
+  if (!member || !channels) {
     return redirect("/");
   }
 
-  return <div>{id}</div>;
+  if (channels && channels.length > 0) {
+    return redirect("/workspace/" + id + "/channel/" + channels[0].id);
+  }
+
+  return <Workspace member={member} />;
 };
 
 export default WorkspacePage;
