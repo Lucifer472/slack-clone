@@ -33,7 +33,7 @@ export const getMembersByWorkspaceId = async ({
   }
 };
 
-export const getMembersByUserIdWorkspaceId = async ({
+export const getMemberByUserIdWorkspaceId = async ({
   userId,
   workspaceId,
 }: {

@@ -16,3 +16,13 @@ export const getChannelsByWorkspaceId = async ({
     return null;
   }
 };
+
+export const getChannelById = async (id: number) => {
+  try {
+    return await db.channels.findUnique({
+      where: { id },
+    });
+  } catch {
+    return null;
+  }
+};

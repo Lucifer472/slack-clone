@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getChannelsByWorkspaceId } from "@/data/channels";
-import { getMembersByUserIdWorkspaceId } from "@/data/members";
+import { getMemberByUserIdWorkspaceId } from "@/data/members";
 import { getWorkspaceById } from "@/data/workspace";
 
 import { session } from "@/lib/session";
@@ -26,7 +26,7 @@ const WorkspacePage = async ({
     return redirect("/");
   }
 
-  const member = await getMembersByUserIdWorkspaceId({
+  const member = await getMemberByUserIdWorkspaceId({
     userId: user.id,
     workspaceId: id,
   });

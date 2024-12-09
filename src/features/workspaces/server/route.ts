@@ -13,7 +13,7 @@ import {
 import { getWorkspaceById } from "@/data/workspace";
 import {
   getMembersByUserId,
-  getMembersByUserIdWorkspaceId,
+  getMemberByUserIdWorkspaceId,
   getMembersByWorkspaceId,
 } from "@/data/members";
 
@@ -57,7 +57,7 @@ const app = new Hono()
       return c.json({ error: "No Workspace Found!" }, 404);
     }
 
-    const member = await getMembersByUserIdWorkspaceId({
+    const member = await getMemberByUserIdWorkspaceId({
       userId: user.id,
       workspaceId,
     });
@@ -72,7 +72,7 @@ const app = new Hono()
     const user = c.get("user");
     const { workspaceId } = c.req.param();
 
-    const member = await getMembersByUserIdWorkspaceId({
+    const member = await getMemberByUserIdWorkspaceId({
       workspaceId,
       userId: user.id,
     });
@@ -87,7 +87,7 @@ const app = new Hono()
     const user = c.get("user");
     const { workspaceId } = c.req.param();
 
-    const member = await getMembersByUserIdWorkspaceId({
+    const member = await getMemberByUserIdWorkspaceId({
       workspaceId,
       userId: user.id,
     });
@@ -193,7 +193,7 @@ const app = new Hono()
         return c.json({ error: "No workspace Found!" }, 404);
       }
 
-      const member = await getMembersByUserIdWorkspaceId({
+      const member = await getMemberByUserIdWorkspaceId({
         userId: user.id,
         workspaceId,
       });
@@ -232,7 +232,7 @@ const app = new Hono()
       return c.json({ error: "No workspace Found!" }, 404);
     }
 
-    const member = await getMembersByUserIdWorkspaceId({
+    const member = await getMemberByUserIdWorkspaceId({
       userId: user.id,
       workspaceId,
     });
