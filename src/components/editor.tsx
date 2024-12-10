@@ -15,6 +15,7 @@ import { Hint } from "./hint";
 import { cn } from "@/lib/utils";
 
 import "quill/dist/quill.snow.css";
+import { EmojiPopover } from "./emoji-popover";
 
 type EditorValue = {
   image: File | null;
@@ -135,6 +136,13 @@ const Editor = ({
     }
   };
 
+  const onEmojiSelect = (emoji: unknown) => {
+    const quill = quillRef.current;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    quill?.insertText(quill?.getSelection()?.index || 0, emoji.native);
+  };
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
@@ -152,17 +160,11 @@ const Editor = ({
               <ALargeSmallIcon />
             </Button>
           </Hint>
-          <Hint label="Emojis">
-            <Button
-              disabled={disabled}
-              size={"iconSm"}
-              variant={"ghost"}
-              onClick={() => {}}
-            >
+          <EmojiPopover onEmojiSelect={onEmojiSelect} hint="Emojis">
+            <Button disabled={disabled} size={"iconSm"} variant={"ghost"}>
               <SmileIcon />
             </Button>
-          </Hint>
-
+          </EmojiPopover>
           {variant === "create" && (
             <Hint label="Images">
               <Button
@@ -211,11 +213,18 @@ const Editor = ({
           )}
         </div>
       </div>
-      <div className="p-2 text-[10px] text-muted-foreground flex justify-end">
-        <p>
-          <strong>Shift + Enter</strong> to add new line
-        </p>
-      </div>
+      {variant == "create" && (
+        <div
+          className={cn(
+            "p-2 text-[10px] text-muted-foreground flex justify-end transition-all",
+            isEmpty ? "opacity-0" : "opacity-100"
+          )}
+        >
+          <p>
+            <strong>Shift + Enter</strong> to add new line
+          </p>
+        </div>
+      )}
     </div>
   );
 };
