@@ -67,6 +67,8 @@ model workspaces {
   members Members[]
   channels  Channels[]
   messages  Message[]
+  conversion Conversion[]
+  reaction Reaction[]
 }
 
 model Members {
@@ -79,6 +81,7 @@ model Members {
   workspace  workspaces  @relation(fields: [workspaceId], references: [id],onDelete: Cascade)
 
   messages Message[]
+  reaction Reaction[]
 
   role Role   @default(MEMBER)
 
@@ -105,6 +108,20 @@ model Channels {
   @@index([workspaceId],name:"by_workspace_id")
 }
 
+model Conversion {
+  id       Int   @id @default(autoincrement())
+
+  workspaceId String
+  workspace workspaces  @relation(fields: [workspaceId], references: [id],onDelete: Cascade)
+
+  memberOneId Int
+  memberTwoId Int
+
+  message Message[]
+
+  @@index([workspaceId],name:"by_workspace_id")
+}
+
 
 model Message {
   id  Int @id   @default(autoincrement())
@@ -118,12 +135,34 @@ model Message {
   channelId Int?
   parentMessageId  Int?
   
-  // TODO: Add Conversion Id
+  conversionId Int?
 
   member Members @relation(fields: [memberId], references: [id], onDelete: Cascade)
   workspace workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   channel Channels? @relation(fields: [channelId],references: [id],onDelete: Cascade)
+  conversion Conversion? @relation(fields: [conversionId],references: [id],onDelete: Cascade)
+
+  reaction Reaction[]
 
   updatedAt DateTime  @updatedAt
   createdAt DateTime  @default(now())
+
+  @@index([workspaceId],name:"by_workspace_id")
+  @@index([memberId],name:"by_member_id")
+  @@index([conversionId],name:"by_conversion_id")
+  @@index([channelId,parentMessageId,conversionId],name:"by_channel_parent_conversion_id")
+}
+
+model Reaction {
+  id  Int   @id  @default(autoincrement())
+
+  workspaceId String
+  messageId  Int
+  memberId  Int
+
+  value String
+
+  workspace workspaces @relation(fields: [workspaceId],references: [id],onDelete: Cascade)
+  message Message @relation(fields: [messageId],references: [id],onDelete: Cascade)
+  member Members @relation(fields: [memberId],references: [id],onDelete: Cascade)
 }

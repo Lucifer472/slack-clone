@@ -6,4 +6,5 @@ export const MessageSchema = z.object({
   channelId: z.number().optional(),
   workspaceId: z.string(),
   parentMessageId: z.number().optional(),
+  conversionId: z.number().optional(),
 });

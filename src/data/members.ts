@@ -13,6 +13,18 @@ export const getMembersByUserId = async ({ userId }: { userId: string }) => {
   }
 };
 
+export const getMemberById = async (id: number) => {
+  try {
+    return await db.members.findUnique({
+      where: {
+        id,
+      },
+    });
+  } catch {
+    return null;
+  }
+};
+
 export const getMembersByWorkspaceId = async ({
   workspaceId,
 }: {

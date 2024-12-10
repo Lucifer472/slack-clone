@@ -5,6 +5,7 @@ import Quill from "quill";
 import { toast } from "sonner";
 
 import { useCreateMessage } from "@/features/message/api/use-create-message";
+import { useGetMessage } from "../message/api/use-get-message";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 
@@ -21,6 +22,14 @@ export const ChatInput = ({
   const editorRef = useRef<Quill | null>(null);
 
   const { mutate, isPending } = useCreateMessage();
+
+  const { data } = useGetMessage({
+    queryParams: { page: "1", channelId: channelId?.toString() },
+  });
+
+  if (data) {
+    console.log(data.data[0]);
+  }
 
   const handleSubmit = async ({
     body,
