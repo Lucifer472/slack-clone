@@ -40,7 +40,11 @@ const ChannelPage = async ({
         isAdmin={member.role === "ADMIN"}
       />
       <div className="flex-1"></div>
-      <ChatInput placeholder={"Message # " + channelData.name} />
+      <ChatInput
+        placeholder={"Message # " + channelData.name}
+        channelId={channelData.id}
+        workspaceId={channelData.workspaceId}
+      />
     </div>
   );
 };
