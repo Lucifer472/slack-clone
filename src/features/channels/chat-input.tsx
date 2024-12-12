@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Quill from "quill";
 
 import { useCreateMessage } from "@/features/message/api/use-create-message";
-import { useGetMessage } from "../message/api/use-get-message";
+
 import { useSocket } from "@/components/socket-wrapper";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
@@ -25,29 +25,17 @@ export const ChatInput = ({
 
   const { mutate, isPending } = useCreateMessage();
 
-  const { data, refetch: refetchMessages } = useGetMessage({
-    queryParams: { page: "1", channelId: channelId?.toString() },
-  });
-
-  if (data) {
-    console.log(data.data[0]);
-  }
-
   useEffect(() => {
     if (isConnected && !!socket) {
       if (socket.connected) {
         socket.emit("join_channel", { channelId });
       }
 
-      socket.on("receive_message", () => {
-        refetchMessages();
-      });
-
       return () => {
-        socket.off("receive_message");
+        socket.off("join_channel");
       };
     }
-  }, [isConnected, channelId, socket, refetchMessages]);
+  }, [isConnected, channelId, socket]);
 
   const handleSubmit = async ({
     body,
@@ -103,7 +91,7 @@ export const ChatInput = ({
           setEditorKey((prev) => prev + 1);
 
           if (!!socket && isConnected) {
-            socket.emit("send_message", {
+            socket.emit("send_message_channel", {
               channelId,
             });
           }

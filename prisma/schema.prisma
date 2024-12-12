@@ -69,6 +69,9 @@ model workspaces {
   messages  Message[]
   conversion Conversion[]
   reaction Reaction[]
+
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
 }
 
 model Members {
@@ -105,6 +108,9 @@ model Channels {
 
   message Message[]
 
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
+
   @@index([workspaceId],name:"by_workspace_id")
 }
 
@@ -118,6 +124,10 @@ model Conversion {
   memberTwoId Int
 
   message Message[]
+
+
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
 
   @@index([workspaceId],name:"by_workspace_id")
 }
@@ -165,4 +175,7 @@ model Reaction {
   workspace workspaces @relation(fields: [workspaceId],references: [id],onDelete: Cascade)
   message Message @relation(fields: [messageId],references: [id],onDelete: Cascade)
   member Members @relation(fields: [memberId],references: [id],onDelete: Cascade)
+
+  updatedAt DateTime  @updatedAt
+  createdAt DateTime  @default(now())
 }

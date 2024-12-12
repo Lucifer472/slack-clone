@@ -7,6 +7,7 @@ import { session } from "@/lib/session";
 
 import { Header } from "@/features/channels/header";
 import { ChatInput } from "@/features/channels/chat-input";
+import { Message } from "@/features/message/message";
 
 const ChannelPage = async ({
   params,
@@ -39,7 +40,7 @@ const ChannelPage = async ({
         workspaceId={id}
         isAdmin={member.role === "ADMIN"}
       />
-      <div className="flex-1"></div>
+      <Message channel={channelData} />
       <ChatInput
         placeholder={"Message # " + channelData.name}
         channelId={channelData.id}

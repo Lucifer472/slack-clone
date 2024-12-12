@@ -28,14 +28,20 @@ app.prepare().then(() => {
       socket.join(channelId);
     });
 
-    socket.on("send_message", (messageData) => {
-      const { channelId } = messageData;
+    socket.on("join_conversion", ({ conversionId }) => {
+      socket.join(conversionId);
+    });
 
+    socket.on("send_message", ({ conversionId }) => {
+      io.to(conversionId).emit("receive_message");
+    });
+
+    socket.on("send_message_channel", ({ channelId }) => {
       // Emit the message to all clients in the channel, including the sender
-      io.to(channelId).emit("receive_message");
+      io.to(channelId).emit("receive_message_channel");
 
       // Optional: Log the message or process further
-      console.log(`Message sent to channel ${channelId}:`, message);
+      console.log(`Message sent to channel ${channelId}:`);
     });
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);

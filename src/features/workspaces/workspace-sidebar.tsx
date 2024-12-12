@@ -102,6 +102,7 @@ export const WorkspaceSidebar = () => {
             <UserItem
               id={m.user.id}
               key={m.id}
+              label={m.user.name as string}
               image={m.user.image ? m.user.image : undefined}
             />
           ))}

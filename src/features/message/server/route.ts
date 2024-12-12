@@ -8,6 +8,7 @@ import { MessageSchema } from "../schema";
 import { getMemberByUserIdWorkspaceId } from "@/data/members";
 import { getChannelById } from "@/data/channels";
 import { createMessage, getMessageById } from "@/data/message";
+// import { Reaction } from "@prisma/client";
 
 const app = new Hono()
   .post(
@@ -91,8 +92,36 @@ const app = new Hono()
     }
 
     const results = await db.message.findMany({
-      take: 100,
-      skip: (parseInt(page) - 1) * 100,
+      take: 10,
+      skip: (parseInt(page) - 1) * 10,
+      orderBy: {
+        updatedAt: "desc",
+      },
+      include: {
+        member: {
+          include: {
+            user: true,
+          },
+        },
+        reaction: true,
+      },
+      where: {
+        AND: [
+          {
+            channelId: parseInt(channelId),
+          },
+          {
+            parentMessageId: parseInt(parentMessageId),
+          },
+          {
+            conversionId: _conversionId ? parseInt(_conversionId) : undefined,
+          },
+        ],
+      },
+    });
+
+    const nextPage = await db.message.findFirst({
+      skip: (parseInt(page) - 1) * 10,
       orderBy: {
         updatedAt: "desc",
       },
@@ -111,7 +140,58 @@ const app = new Hono()
       },
     });
 
-    return c.json({ success: "Request was success", data: results }, 200);
+    for (let i = 0; i < results.length; i++) {
+      const thread = await db.message.findMany({
+        where: {
+          parentMessageId: results[i].id,
+        },
+        include: {
+          member: {
+            include: {
+              user: true,
+            },
+          },
+          reaction: true,
+        },
+      });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      results[i].thread = thread.length > 0 ? thread : null;
+
+      // const reactionsWithCount = results[i].reaction.map((reaction) => {
+      //   return {
+      //     ...reaction,
+      //     count: results[i].reaction.filter((r) => r.value == reaction.value)
+      //       .length,
+      //   };
+      // });
+
+      // const dupedReactions = reactionsWithCount.reduce(
+      //   (acc, reaction) => {
+      //     const existingReaction = acc.find((r) => r.value == reaction.value);
+
+      //     if (existingReaction) {
+      //       existingReaction.memberId = Array.from(
+      //         new Set([existingReaction.memberId, reaction.memberId])
+      //       );
+      //     } else {
+      //       acc.push({ ...reaction, memberId: reaction.memberId });
+      //     }
+      //   },
+      //   [] as (Reaction & {
+      //     count: true;
+      //   })[]
+      // );
+    }
+
+    return c.json(
+      {
+        success: "Request was success",
+        data: results,
+        nextPage: nextPage ? parseInt(page) + 1 : undefined,
+      },
+      200
+    );
   });
 
 export default app;
