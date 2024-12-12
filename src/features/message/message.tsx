@@ -13,7 +13,7 @@ export const Message = ({ channel }: { channel: Channels }) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isFetching,
+    isPending,
     refetch,
   } = useGetMessages({
     queryParams: { channelId: channel.id },
@@ -29,7 +29,7 @@ export const Message = ({ channel }: { channel: Channels }) => {
     }
   }, [isConnected, socket, refetch]);
 
-  if (isFetching) {
+  if (isPending) {
     return (
       <div className="h-full flex-1 flex items-center justify-center">
         <LoaderIcon className="animate-spin size-5 text-muted-foreground" />
