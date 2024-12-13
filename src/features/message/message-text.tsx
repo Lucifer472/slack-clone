@@ -1,26 +1,20 @@
-import { Hint } from "@/components/hint";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Members, User } from "@prisma/client";
 import { format, isToday, isYesterday } from "date-fns";
 import dynamic from "next/dynamic";
+
+import { Hint } from "@/components/hint";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Members, reactions, User } from "@/types";
+
+import { Thumbnail } from "./thumbnail";
 
 type MessageTextProps = {
   id: number;
   member: Members & {
     user: User;
   };
-  reaction: {
-    id: number;
-    workspaceId: string;
-    updatedAt: Date;
-    createdAt: Date;
-    value: string;
-    messageId: number;
-    count: number;
-    memberIds: number[];
-  }[];
-  updatedAt: Date;
-  createdAt: Date;
+  reaction: reactions[];
+  updatedAt: string;
+  createdAt: string;
   isAuthor: boolean;
   body: string;
   image?: string | null;
@@ -29,7 +23,7 @@ type MessageTextProps = {
   setEditingId: (id: null | number) => void;
   threadCount?: number;
   threadImage?: string | null;
-  threadTimestamp?: Date | number;
+  threadTimestamp?: string | number;
   hideThreadButton?: boolean;
 };
 
@@ -60,6 +54,7 @@ export const MessageText = ({
   threadCount,
   threadImage,
   threadTimestamp,
+  hideThreadButton,
 }: MessageTextProps) => {
   const authorName = member.user.name ?? "a";
   const authorImage = member.user.image;
@@ -73,9 +68,14 @@ export const MessageText = ({
               {format(new Date(createdAt), "hh:mm")}
             </button>
           </Hint>
+          <div className="flex flex-col w-full">
+            <Renderer value={body} />
+            <Thumbnail url={image} />
+            {updatedAt > createdAt && (
+              <span className="text-xs text-muted-foreground">(edited)</span>
+            )}
+          </div>
         </div>
-
-        <Renderer value={body} />
       </div>
     );
   }
@@ -84,12 +84,9 @@ export const MessageText = ({
     <div className="flex flex-col gap-2 p-1.5 px-5 hover:bg-gray-100/60 group relative">
       <div className="flex items-start gap-2">
         <button>
-          <Avatar className="size-5 rounded-md mr-1">
-            <AvatarImage
-              className="rounded-md"
-              src={authorImage ?? ""}
-            ></AvatarImage>
-            <AvatarFallback className="rounded-md bg-sky-500 text-white text-xs">
+          <Avatar>
+            <AvatarImage src={authorImage ?? undefined}></AvatarImage>
+            <AvatarFallback>
               {authorName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -109,11 +106,22 @@ export const MessageText = ({
             </Hint>
           </div>
           <Renderer value={body} />
+          <Thumbnail url={image} />
           {updatedAt > createdAt && (
             <span className="text-xs text-muted-foreground">(edited)</span>
           )}
         </div>
       </div>
+      {!isEditing && (
+        <Toolbar
+          isAuthor={isAuthor}
+          isPending={false}
+          handleEdit={() => setEditingId(id)}
+          handleThread={() => {}}
+          handleDelete={() => {}}
+          hideThreadButton={hideThreadButton}
+        />
+      )}
     </div>
   );
 };

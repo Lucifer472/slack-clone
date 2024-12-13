@@ -1,27 +1,12 @@
-import { Members, Message, User } from "@prisma/client";
-import { format, isToday, isYesterday } from "date-fns";
-import { MessageText } from "./message-text";
+"use client";
+import { useState } from "react";
+import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
+import { MessageReturnType } from "@/types";
 
-interface MessageReturnType extends Message {
-  member: Members & {
-    user: User;
-  };
-  page: {
-    reactions: {
-      id: number;
-      workspaceId: string;
-      updatedAt: Date;
-      createdAt: Date;
-      value: string;
-      messageId: number;
-      count: number;
-      memberIds: number[];
-    }[];
-    threadCount: number;
-    threadImage: string | null | undefined;
-    threadTimestamp: number | Date;
-  };
-}
+import { MessageText } from "./message-text";
+import { ChannelHero } from "./channel-hero";
+
+import { useCurrent } from "../auth/api/use-current";
 
 type MessageListProps = {
   channelName?: string;
@@ -31,11 +16,14 @@ type MessageListProps = {
   canLoadMore: boolean;
   variant?: "channel" | "thread" | "conversation";
   memberName?: string;
-  pages: {
-    data: MessageReturnType[];
+  data: {
     success: string;
+    nextPage: number | undefined;
+    data: MessageReturnType[];
   }[];
 };
+
+const TIME_THRESHOLD = 5;
 
 const formatDateLabel = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -55,15 +43,18 @@ export const MessageList = ({
   canLoadMore,
   channelCreationTime,
   channelName,
-  pages,
+  data,
   isLoadingMore,
   loadMore,
   variant = "channel",
   memberName,
 }: MessageListProps) => {
-  const data = pages[0].data;
+  const [editingId, setEditingId] = useState<null | number>(null);
 
-  const groupedMessage = data.reduce((groups, message) => {
+  const { data: currentUser } = useCurrent();
+  const mergedMessage = data.flatMap((d) => d.data);
+
+  const groupedMessage = mergedMessage.reduce((groups, message) => {
     const date = new Date(message.createdAt);
 
     const dateKey = format(date, "yyyy-MM-dd");
@@ -75,9 +66,7 @@ export const MessageList = ({
     groups[dateKey].unshift(message);
 
     return groups;
-  }, {} as Record<string, typeof data>);
-
-  console.log(groupedMessage);
+  }, {} as Record<string, typeof mergedMessage>);
 
   return (
     <div className="flex-1 flex flex-col-reverse pb-4 overflow-y-auto message-scrollbar">
@@ -89,28 +78,42 @@ export const MessageList = ({
               {formatDateLabel(dateKey)}
             </span>
           </div>
-          {message.map((msg, index) => (
-            <MessageText
-              key={index}
-              id={msg.id}
-              member={msg.member}
-              reaction={msg.page.reactions}
-              updatedAt={msg.updatedAt}
-              createdAt={msg.createdAt}
-              threadCount={msg.page.threadCount}
-              threadImage={msg.page.threadImage}
-              threadTimestamp={msg.page.threadTimestamp}
-              isEditing={false}
-              setEditingId={() => {}}
-              hideThreadButton={false}
-              isAuthor={false}
-              body={msg.body}
-              image={msg.image}
-              isCompact={false}
-            />
-          ))}
+          {message.map((msg, index) => {
+            const prev = message[index - 1];
+            const isCompact =
+              prev &&
+              prev.memberId === msg.memberId &&
+              differenceInMinutes(
+                new Date(msg.createdAt),
+                new Date(prev.createdAt)
+              ) < TIME_THRESHOLD;
+
+            return (
+              <MessageText
+                key={index}
+                id={msg.id}
+                member={msg.member}
+                reaction={msg.page.reactions}
+                updatedAt={msg.updatedAt}
+                createdAt={msg.createdAt}
+                threadCount={msg.page.threadCount}
+                threadImage={msg.page.threadImage}
+                threadTimestamp={msg.page.threadTimestamp}
+                isEditing={editingId === msg.id}
+                setEditingId={setEditingId}
+                hideThreadButton={variant === "thread"}
+                isAuthor={msg.member.userId === currentUser?.id}
+                body={msg.body}
+                image={msg.image}
+                isCompact={isCompact}
+              />
+            );
+          })}
         </div>
       ))}
+      {variant === "channel" && channelName && channelCreationTime && (
+        <ChannelHero createdAt={channelCreationTime} name={channelName} />
+      )}
     </div>
   );
 };

@@ -1,11 +1,12 @@
 "use client";
+import { useEffect } from "react";
+import { LoaderIcon } from "lucide-react";
 import { Channels } from "@prisma/client";
+
+import { useSocket } from "@/components/socket-wrapper";
 
 import { MessageList } from "./message-list";
 import { useGetMessages } from "./api/use-get-messages";
-import { LoaderIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useSocket } from "@/components/socket-wrapper";
 
 export const Message = ({ channel }: { channel: Channels }) => {
   const {
@@ -47,9 +48,7 @@ export const Message = ({ channel }: { channel: Channels }) => {
     <MessageList
       channelName={channel.name}
       channelCreationTime={channel.createdAt}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      pages={data.pages}
+      data={data.pages}
       loadMore={fetchNextPage}
       isLoadingMore={isFetchingNextPage}
       canLoadMore={hasNextPage}
