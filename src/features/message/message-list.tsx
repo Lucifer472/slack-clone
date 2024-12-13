@@ -106,6 +106,7 @@ export const MessageList = ({
               isAuthor={false}
               body={msg.body}
               image={msg.image}
+              isCompact={false}
             />
           ))}
         </div>
